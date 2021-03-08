@@ -20,7 +20,7 @@ function isValidProvince($data){
 
 
 #================  Read Operations  =================
-#get all cities or cities related to a province
+#get all Cities or Cities related to a province
 function getCities($data = null){
     global $pdo;
     $province_id = isset($data['province_id']) ? $data['province_id'] : null;
@@ -35,7 +35,7 @@ function getCities($data = null){
     return $records;
 }
 
-#get all provinces
+#get all Provinces
 function getProvinces($data = null){
     global $pdo;
     $sql = "select * from province";
