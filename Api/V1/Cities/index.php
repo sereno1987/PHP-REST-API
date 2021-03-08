@@ -53,8 +53,17 @@ switch ($requestMethod){
         Response::respondAndDie($result,Response::HTTP_OK);
 
     case 'PUT':
-        Response::respondAndDie(["PUT Request"],Response::HTTP_OK);
-        break;
+        #get from body
+        $requestBody=json_decode(file_get_contents("php://input"),true);
+        if(!$cityValidationService->isValidCity($requestBody))
+            Response::respondAndDie(['Error: Invalid Data'],Response::HTTP_NOT_ACCEPTABLE);
+
+        if(!$cityValidationService->validCityId(['cityId'=>$requestBody['cityId']]))
+            Response::respondAndDie(['Error: Invalid City Id'],Response::HTTP_NOT_FOUND);
+
+
+        $result= $cityService->updateCity($requestBody);
+        Response::respondAndDie($result,Response::HTTP_OK);
 
     default:
         Response::respondAndDie(["Invalid Request method"],Response::HTTP_METHOD_NOT_ALLOWED);

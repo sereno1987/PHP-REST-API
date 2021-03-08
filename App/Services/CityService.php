@@ -17,4 +17,9 @@ class CityService{
         return $result;
     }
 
+    public  static function updateCity($data){
+        $result= changeCityName($data);
+        return $result;
+    }
+
 }

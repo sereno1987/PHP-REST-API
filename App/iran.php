@@ -9,9 +9,17 @@ try {
 
 #==============  Simple Validators  ================
 function isValidCity($data){
-    if(empty($data['provinceId']) or !is_numeric($data['provinceId']))
-        return false;
-    return empty($data['name']) ? false : true;
+    if ($data['cityId']){
+        if(empty($data['cityId']) or !is_numeric($data['cityId']))
+            return false;
+        return empty($data['name']) ? false : true;
+    }
+    if ($data['cityId']){
+        if(empty($data['provinceId']) or !is_numeric($data['provinceId']))
+            return false;
+        return empty($data['name']) ? false : true;
+    }
+
 }
 
 function isValidProvince($data){
@@ -105,11 +113,11 @@ function addProvince($data){
 
 
 #================  Update Operations  =================
-function changeCityName($city_id,$name){
+function changeCityName($data){
     global $pdo;
-    $sql = "update city set name = '$name' where id = $city_id";
+    $sql = "update city set name =:name where id =:city_id";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute();
+    $stmt->execute([':city_id'=>$data['cityId'],':name'=>$data['name']]);
     return $stmt->rowCount();
 }
 function changeProvinceName($province_id,$name){
