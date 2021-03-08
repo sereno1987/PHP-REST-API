@@ -136,7 +136,6 @@ class Response{
     public static function respond($data,$statusCode= self::HTTP_OK){
         #set headers
         self::setHeaders($statusCode);
-
         #prepare response data
         $response=[
             'http_status'=> $statusCode,

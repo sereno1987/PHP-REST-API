@@ -9,7 +9,7 @@ try {
 
 #==============  Simple Validators  ================
 function isValidCity($data){
-    if(empty($data['province_id']) or !is_numeric($data['province_id']))
+    if(empty($data['provinceId']) or !is_numeric($data['provinceId']))
         return false;
     return empty($data['name']) ? false : true;
 }
@@ -17,15 +17,34 @@ function isValidCity($data){
 function isValidProvince($data){
     return empty($data['name']) ? false : true;
 }
+function isProvinceExists($data){
+    global $pdo;
+    if(!(($data['provinceId']) and is_numeric($data['provinceId'])))
+        return false;
+    $province_id = $data['provinceId'];
 
+    $sql = "select id from province ";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute();
+    $records = $stmt->fetchAll(PDO::FETCH_OBJ);
+    $result=[];
+    foreach ($records as $record){
+        $item=$record->id;
+        $result[]=$item;
+    }
+    $finalResult=in_array ($province_id, $result);
+    var_dump($finalResult);
+    return $finalResult;
+
+}
 
 #================  Read Operations  =================
 #get all Cities or Cities related to a province
 function getCities($data = null){
     global $pdo;
-    $province_id = isset($data['province_id']) ? $data['province_id'] : null;
+    $province_id = $data['provinceId'] ?? null;
     $where = '';
-    if(!is_null($province_id) and is_int($province_id)){
+    if(!is_null($province_id)){
         $where = "where province_id = {$province_id} ";
     }
     $sql = "select * from city $where";
@@ -45,7 +64,6 @@ function getProvinces($data = null){
     return $records;
 }
 
-
 #================  Create Operations  =================
 function addCity($data){
     global $pdo;
@@ -54,7 +72,7 @@ function addCity($data){
     }
     $sql = "INSERT INTO `city` (`province_id`, `name`) VALUES (:province_id, :name);";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([':province_id'=>$data['province_id'],':name'=>$data['name']]);
+    $stmt->execute([':province_id'=>$data['provinceId'],':name'=>$data['name']]);
     return $stmt->rowCount();
 }
 
