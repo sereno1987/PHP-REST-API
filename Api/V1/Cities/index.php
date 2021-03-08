@@ -14,13 +14,25 @@ switch ($requestMethod){
     case 'GET':
         #get from query string
         $provinceId= $_GET['provinceId'] ?? null;
+        $fields=$_GET['fields'] ?? '*';
+        $table='city';
 
         #for single responsibility purposes, the validator class should be seperated
         if(! $cityValidationService->validProvinceId(['provinceId'=>$provinceId]))
             Response::respondAndDie(['Error: Invalid Province Id'],Response::HTTP_NOT_FOUND);
 
+        if ($fields!= '*'){
+            if (! $cityValidationService->filterFieldsValidation(['fields'=>$fields , 'table'=> $table]))
+                Response::respondAndDie(['Error: Invalid field  name'],Response::HTTP_NOT_FOUND);
+
+        }
+
+
         $requestData=[
-            'provinceId'=>$provinceId
+            'provinceId'=>$provinceId,
+            'fields'=>$_GET['fields'] ?? '*',
+            'page'=>$_GET['page'] ?? null ,
+            'pageSize'=>$_GET['pageSize'] ?? null,
         ];
         $result= $cityService->getCities($requestData);
         Response::respondAndDie($result,Response::HTTP_OK);

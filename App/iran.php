@@ -64,17 +64,48 @@ function cityExists($data){
     return $finalResult;
 }
 
+function filterFieldsValidation($data){
+    global $pdo;
+    $table=$data['table'];
+    $fields = $data['fields'] ?? '';
+    $validFields="DESCRIBE $table";
+    $validFieldsStmt = $pdo->prepare($validFields);
+    $validFieldsStmt->execute();
+    $validFieldsStmtRecords = $validFieldsStmt->fetchAll(PDO::FETCH_OBJ);
+    foreach ($validFieldsStmtRecords as $item){
+        $result[]=$item->Field;
+    }
+
+    $fieldsExplode = explode(",", $fields);
+    foreach ($fieldsExplode as $field){
+        if (!(in_array($field, $result))){
+            return false;
+        }
+    }
+
+    return true;
+}
+
 
 #================  Read Operations  =================
 #get all Cities or Cities related to a province
 function getCities($data = null){
     global $pdo;
     $province_id = $data['provinceId'] ?? null;
+    $fields = $data['fields'] ?? '*';
+    $page = $data['page'] ?? null;
+    $pageSize = $data['pageSize'] ?? null;
+    $limit='';
+    if ((is_numeric($page) and is_numeric($pageSize))){
+        $start=(($page-1)*$pageSize);
+        $limit="LIMIT $start, $pageSize";
+    }
     $where = '';
     if(!is_null($province_id)){
         $where = "where province_id = {$province_id} ";
     }
-    $sql = "select * from city $where";
+
+    $sql = "select $fields from city $where $limit";
     $stmt = $pdo->prepare($sql);
     $stmt->execute();
     $records = $stmt->fetchAll(PDO::FETCH_OBJ);

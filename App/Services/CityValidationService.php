@@ -17,4 +17,9 @@ class CityValidationService{
         return $result;
     }
 
+    public  static function filterFieldsValidation($data){
+        $result= filterFieldsValidation($data);
+        return $result;
+    }
+
 }
