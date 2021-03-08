@@ -17,7 +17,8 @@ function isValidCity($data){
 function isValidProvince($data){
     return empty($data['name']) ? false : true;
 }
-function isProvinceExists($data){
+
+function provinceExists($data){
     global $pdo;
     if(!(($data['provinceId']) and is_numeric($data['provinceId'])))
         return false;
@@ -33,10 +34,28 @@ function isProvinceExists($data){
         $result[]=$item;
     }
     $finalResult=in_array ($province_id, $result);
-    var_dump($finalResult);
     return $finalResult;
 
 }
+
+function cityExists($data){
+    global $pdo;
+    if(!(($data['cityId']) and is_numeric($data['cityId'])))
+        return false;
+    $city_id = $data['cityId'];
+    $sql = "select id from city ";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute();
+    $records = $stmt->fetchAll(PDO::FETCH_OBJ);
+    $result=[];
+    foreach ($records as $record){
+        $item=$record->id;
+        $result[]=$item;
+    }
+    $finalResult=in_array ($city_id, $result);
+    return $finalResult;
+}
+
 
 #================  Read Operations  =================
 #get all Cities or Cities related to a province
@@ -67,9 +86,6 @@ function getProvinces($data = null){
 #================  Create Operations  =================
 function addCity($data){
     global $pdo;
-    if(!isValidCity($data)){
-        return false;
-    }
     $sql = "INSERT INTO `city` (`province_id`, `name`) VALUES (:province_id, :name);";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([':province_id'=>$data['provinceId'],':name'=>$data['name']]);
@@ -105,8 +121,9 @@ function changeProvinceName($province_id,$name){
 }
 
 #================  Delete Operations  =================
-function deleteCity($city_id){
+function deleteCity($data){
     global $pdo;
+    $city_id = $data['cityId'] ?? null;
     $sql = "delete from city where id = $city_id";
     $stmt = $pdo->prepare($sql);
     $stmt->execute();

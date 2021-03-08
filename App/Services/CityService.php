@@ -13,7 +13,7 @@ class CityService{
     }
 
     public  static function deleteCity($data){
-        $result= addCity($data);
+        $result= deleteCity($data);
         return $result;
     }
 
