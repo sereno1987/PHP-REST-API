@@ -28,7 +28,7 @@ function isValidProvince($data){
 
 function provinceExists($data){
     global $pdo;
-    if(!(($data['provinceId']) and is_numeric($data['provinceId'])))
+    if(is_null($data['provinceId']) and !(is_numeric($data['provinceId'])))
         return false;
     $province_id = $data['provinceId'];
 
@@ -93,6 +93,7 @@ function getCities($data = null){
     global $pdo;
     $province_id = $data['provinceId'] ?? null;
     $fields = $data['fields'] ?? '*';
+    $orderBy = $data['orderBy'] ?? null;
     $page = $data['page'] ?? null;
     $pageSize = $data['pageSize'] ?? null;
     $limit='';
@@ -101,11 +102,15 @@ function getCities($data = null){
         $limit="LIMIT $start, $pageSize";
     }
     $where = '';
+    $orderbyString = '';
     if(!is_null($province_id)){
         $where = "where province_id = {$province_id} ";
     }
+    if(!is_null($orderBy)){
+        $orderbyString = "order by $orderBy";
+    }
 
-    $sql = "select $fields from city $where $limit";
+    $sql = "select $fields from city $where $orderbyString $limit";
     $stmt = $pdo->prepare($sql);
     $stmt->execute();
     $records = $stmt->fetchAll(PDO::FETCH_OBJ);

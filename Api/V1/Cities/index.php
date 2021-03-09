@@ -18,8 +18,9 @@ switch ($requestMethod){
         $table='city';
 
         #for single responsibility purposes, the validator class should be seperated
-        if(! $cityValidationService->validProvinceId(['provinceId'=>$provinceId]))
-            Response::respondAndDie(['Error: Invalid Province Id'],Response::HTTP_NOT_FOUND);
+        if(!is_null($provinceId))
+            if(! $cityValidationService->validProvinceId(['provinceId'=>$provinceId]))
+                Response::respondAndDie(['Error: Invalid Province Id'],Response::HTTP_NOT_FOUND);
 
         if ($fields!= '*'){
             if (! $cityValidationService->filterFieldsValidation(['fields'=>$fields , 'table'=> $table]))
@@ -27,11 +28,11 @@ switch ($requestMethod){
 
         }
 
-
         $requestData=[
             'provinceId'=>$provinceId,
             'fields'=>$_GET['fields'] ?? '*',
             'page'=>$_GET['page'] ?? null ,
+            'orderBy'=>$_GET['orderBy'] ?? null ,
             'pageSize'=>$_GET['pageSize'] ?? null,
         ];
         $result= $cityService->getCities($requestData);
