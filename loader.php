@@ -3,6 +3,10 @@
 include_once __DIR__ . "/App/iran.php";
 include_once __DIR__ . "/App/Utilities/helpers.php";
 
+const CACHE_DIR = __DIR__ . '/cache';
+const CACHE_ENABLED = 1 ;
+
+
 
 spl_autoload_register(function ($class){
      #but using PSR4

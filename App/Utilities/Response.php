@@ -152,7 +152,7 @@ class Response{
     }
 
     #1: set headers
-    public static function setHeaders($statusCode){
+    public static function setHeaders($statusCode=self::HTTP_OK){
         header("Access-Control-Allow-Origin: * ");
         header("Content-Type: application/json; charset=UTF-8 ");
         header("Access-Control-Allow-Methods: GET,POST,PUT,DELETE");
