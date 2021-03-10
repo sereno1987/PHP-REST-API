@@ -4,6 +4,9 @@ include_once "../../../loader.php";
 use App\Services\CityService;
 use App\Services\CityValidationService;
 use App\Utilities\Response;
+use App\Utilities\CacheUtility;
+
+
 
 $requestMethod=$_SERVER['REQUEST_METHOD'];
 $cityService=new CityService();
@@ -12,6 +15,8 @@ $cityValidationService=new CityValidationService();
 
 switch ($requestMethod){
     case 'GET':
+
+        CacheUtility::start();
         #get from query string
         $provinceId= $_GET['provinceId'] ?? null;
         $fields=$_GET['fields'] ?? '*';
@@ -36,7 +41,9 @@ switch ($requestMethod){
             'pageSize'=>$_GET['pageSize'] ?? null,
         ];
         $result= $cityService->getCities($requestData);
-        Response::respondAndDie($result,Response::HTTP_OK);
+        echo Response::respond($result,Response::HTTP_OK);
+        CacheUtility::end();
+        break;
 
     case 'POST':
         #get from body
@@ -50,6 +57,8 @@ switch ($requestMethod){
 
         $result= $cityService->createCity($requestBody);
         Response::respondAndDie($result,Response::HTTP_CREATED);
+        break;
+
 
     case 'DELETE':
         #get from query string
@@ -64,6 +73,8 @@ switch ($requestMethod){
         ];
         $result= $cityService->deleteCity($requestData);
         Response::respondAndDie($result,Response::HTTP_OK);
+        break;
+
 
     case 'PUT':
         #get from body
@@ -77,6 +88,7 @@ switch ($requestMethod){
 
         $result= $cityService->updateCity($requestBody);
         Response::respondAndDie($result,Response::HTTP_OK);
+        break;
 
     default:
         Response::respondAndDie(["Invalid Request method"],Response::HTTP_METHOD_NOT_ALLOWED);
